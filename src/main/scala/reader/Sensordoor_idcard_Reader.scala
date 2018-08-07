@@ -6,7 +6,6 @@ import utils.CommonUtil
 
 object Sensordoor_idcard_Reader {
   val dataName = "sensordoor"
-
   // ----------------------------------------------------------------------
   def getData(spark: SparkSession, datePath: String): DataFrame = {
     import spark.implicits._ //隐式转换
@@ -19,8 +18,8 @@ object Sensordoor_idcard_Reader {
     println("##【Sensordoor_idcard_Reader】" + dataPath)
     // ----------------------------------------
     val df = spark.read.load(dataPath)
-    // ----------------------------------------
-    df.na.drop(check)
+    // 【1】----------------------------------------
+    val df1 = df.na.drop(check)
       .map(r => {
         val T = CommonUtil.getTime(r.getAs[String](TS(0)))
         val S = config.getSpaceByGbno(r.getAs[String](TS(1)))
@@ -33,9 +32,8 @@ object Sensordoor_idcard_Reader {
     // ----------------------------------------
 
     // ----------------------------------------
+    val rs = df1
+    rs
   }
   // ----------------------------------------------------------------------
-
-  // ----------------------------------------------------------------------
-
 }

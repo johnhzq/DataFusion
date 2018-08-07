@@ -87,11 +87,11 @@ object ShaM1 {
             val emptyDouble: Double = 0.0
             val emptyLong: Long = 0L
             val emptyString: String = null
-            val emptyList: List[String] = null
-            var one = (emptyInt, emptyDouble, emptyDouble, emptyLong, emptyLong, emptyInt, emptyString, emptyList)
+//            val emptyList: List[String] = null
+            var one = (emptyInt, emptyDouble, emptyDouble, emptyLong, emptyLong, emptyInt, emptyString, emptyString)
             val others = rows.filter(r => r.getAs[Int]("S")!=S)
             if(others.isEmpty){
-              one = (_n, _mean, _var, st, et, S, K, Is)
+              one = (_n, _mean, _var, st, et, S, K, Is.mkString("(", ",", ")"))
             }else{
               var flag = true
               breakable {
@@ -112,7 +112,7 @@ object ShaM1 {
                 }
               }
               if(flag){
-                one = (_n, _mean, _var, st, et, S, K, Is)
+                one = (_n, _mean, _var, st, et, S, K, Is.mkString("(", ",", ")"))
               }
             }
             one

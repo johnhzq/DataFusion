@@ -2,11 +2,15 @@ package main
 
 import conf.Config
 import fusion.FusM1
-import org.apache.spark.sql.SparkSession
+import fusion.confidence.ClaConfidence
+import org.apache.spark.sql.{Row, SparkSession}
 import reader.ReaderAdmin
 import utils.CommonUtil
 
 import scala.util.control.Breaks.{break, breakable}
+import org.apache.spark.sql.functions.desc
+
+import scala.collection.mutable.ListBuffer
 
 object DF {
   def main(args: Array[String]): Unit = {
@@ -58,6 +62,8 @@ object DF {
                       // 【1】获取数据+预处理---------------------------------------
                       val df1 = ReaderAdmin.getDataFrame(dataNameI, spark, datePath)
                       val df2 = ReaderAdmin.getDataFrame(dataNameII, spark, datePath)
+//                      val df1 = ReaderAdmin.getDataFrame("ap", spark, datePath)
+//                      val df2 = ReaderAdmin.getDataFrame("imsi", spark, datePath)
                       // 【2】融合---------------------------------------
                       val rs = FusM1.getRS(spark,df1,df2)
                       // 【3】保存结果---------------------------------------
@@ -65,6 +71,10 @@ object DF {
 //                      rs.map(r=>r.getString(r.fieldIndex("I1"))+"|"+r.getString(r.fieldIndex("I2"))).show()
 //                      rs.write.save(outPath)
 //                      rs.write.text(outPath)
+                      // 【T】---------------------------------------
+//                      val transactions = rs.select("K1","I1","K2","I2")
+//                      ClaConfidence.getRS(spark,transactions)
+                      // 【T】---------------------------------------
                     } catch {
                       case e: Exception => println("## 【E】" + e)
                     }

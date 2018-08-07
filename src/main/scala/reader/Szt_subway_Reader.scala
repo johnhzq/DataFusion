@@ -6,7 +6,6 @@ import utils.CommonUtil
 
 object Szt_subway_Reader {
   val dataName = "szt"
-
   // ----------------------------------------------------------------------
   def getData(spark: SparkSession, datePath: String): DataFrame = {
     import spark.implicits._ //隐式转换
@@ -22,8 +21,8 @@ object Szt_subway_Reader {
       .option("sep", ",")
       //.option("inferSchema", "true") // 自动推测数据类型
       .load(dataPath)
-    // ----------------------------------------
-    df.na.drop(check)
+    // 【1】----------------------------------------
+    val df1 = df.na.drop(check)
       .filter(r => (r.getAs[String]("_c7")+"").startsWith("I"))
       .map(r => {
         val T = CommonUtil.getTime(r.getAs[String](TS(0)).replace("T", " ").replace(".000Z", ""))
@@ -37,9 +36,8 @@ object Szt_subway_Reader {
     // ----------------------------------------
 
     // ----------------------------------------
+    val rs = df1
+    rs
   }
   // ----------------------------------------------------------------------
-
-  // ----------------------------------------------------------------------
-
 }

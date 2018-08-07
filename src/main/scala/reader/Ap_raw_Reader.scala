@@ -2,12 +2,11 @@ package reader
 
 import conf.Config
 import org.apache.spark.sql.{DataFrame, Row, SparkSession}
-
+import sharding.ShaM1
 import scala.collection.mutable.ListBuffer
 
 object Ap_raw_Reader {
   val dataName = "ap"
-
   // ----------------------------------------------------------------------
   def getData(spark: SparkSession, datePath: String): DataFrame = {
     import spark.implicits._ //隐式转换
@@ -20,8 +19,8 @@ object Ap_raw_Reader {
     println("##【Ap_raw_Reader】" + dataPath)
     // ----------------------------------------
     val df = spark.read.load(dataPath)
-    // ----------------------------------------
-    val df1 = df.flatMap(r => {
+    // 【0】----------------------------------------
+    val df0 = df.flatMap(r => {
       val rsBuffer = new ListBuffer[(Long, String, String, String, Long, String, Int, Int)]()
       val _c0 = r.getAs[Long](0)
       val _c1 = r.getAs[String](1)
@@ -39,7 +38,8 @@ object Ap_raw_Reader {
       }
       rsBuffer.toList
     }).toDF("_c0", "_c1", "_c2", "_c3", "_c4", "_c5", "_c6", "_c7")
-    df1.na.drop(check)
+    // 【1】----------------------------------------
+    val df1 = df0.na.drop(check)
       .map(r => {
         val T = r.getAs[Long](TS(0))
         val S = config.getSpaceByGbno(r.getAs[String](TS(1)))
@@ -49,13 +49,16 @@ object Ap_raw_Reader {
       })
       .filter(r => r._2 != (-1))
       .toDF("T", "S", "K", "I")
+    // 【2】---------------------------------------
+    val df2 = ShaM1.getRS(spark, df1)
+    val df2_0 = df2.select("_n", "_mean", "_var", "st", "et", "S", "K")
+    val df2_1 = df2.select("st","S","K","Is").toDF("T", "S", "K", "I")
+    df2_0.show()
     // ----------------------------------------
 
     // ----------------------------------------
+    val rs = df2_1
+    rs
   }
-
   // ----------------------------------------------------------------------
-
-  // ----------------------------------------------------------------------
-
 }
