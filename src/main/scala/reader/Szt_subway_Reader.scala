@@ -23,7 +23,7 @@ object Szt_subway_Reader {
       .load(dataPath)
     // 【1】----------------------------------------
     val df1 = df.na.drop(check)
-      .filter(r => (r.getAs[String]("_c7")+"").startsWith("I"))
+      .filter(r => r.getAs[String]("_c3").matches(".*入站"))
       .map(r => {
         val T = CommonUtil.getTime(r.getAs[String](TS(0)).replace("T", " ").replace(".000Z", ""))
         val S = config.getSpaceByStation(r.getAs[String](TS(1)))

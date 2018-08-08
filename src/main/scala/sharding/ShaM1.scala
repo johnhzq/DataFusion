@@ -122,8 +122,11 @@ object ShaM1 {
       .filter(r => r._1!=0)
       .toDF("_n", "_mean", "_var", "st", "et", "S", "K", "Is")
     // ----------------------------------------
+//    val rs_0 = rs.select("_n", "_mean", "_var", "st", "et", "S", "K")
+//    rs_0.show()
+    val rs_1 = rs.select("st","S","K","Is").toDF("T", "S", "K", "I")
     // ----------------------------------------
-    rs
+    rs_1
   }
   // ----------------------------------------------------------------------
   private def calcDelay(list: List[Long]): List[Long] = {
